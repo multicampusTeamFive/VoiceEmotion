@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-yjk!9ya)f$v40waws$tsve)=9r&a^^3_t9eib4-%oa-4+a(ka7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["ec2-44-228-231-135.us-west-2.compute.amazonaws.com",]
 
 
 # Application definition
@@ -41,6 +41,7 @@ DJANGO_APPS = [
 
 PROJECT_APPS = [
     "wavToTxt.apps.WavtotxtConfig"
+    "voiceToWav.apps.VoiceToWavConfig"
 ]  # 앱은 여기에
 
 THIRD_PARTY_APPS = []  # 외부 앱을 불러올 때
