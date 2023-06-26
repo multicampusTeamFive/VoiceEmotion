@@ -41,7 +41,7 @@ DJANGO_APPS = [
 
 PROJECT_APPS = [
     "wavToTxt.apps.WavtotxtConfig",
-    "voiceToWav.apps.VoiceToWavConfig"
+    "voiceToWav.apps.VoicetowavConfig"
 ]  # 앱은 여기에
 
 THIRD_PARTY_APPS = []  # 외부 앱을 불러올 때
