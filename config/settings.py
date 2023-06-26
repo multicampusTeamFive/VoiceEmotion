@@ -40,7 +40,7 @@ DJANGO_APPS = [
     ]
 
 PROJECT_APPS = [
-    "wavToTxt.apps.WavtotxtConfig"
+    "wavToTxt.apps.WavtotxtConfig",
     "voiceToWav.apps.VoiceToWavConfig"
 ]  # 앱은 여기에
 
