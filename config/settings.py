@@ -26,8 +26,8 @@ SECRET_KEY = "django-insecure-yjk!9ya)f$v40waws$tsve)=9r&a^^3_t9eib4-%oa-4+a(ka7
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "emotional-musics.com",
     "44.228.231.135"
+    "emotional-musics.com",
     "127.0.0.1",
     ]
 
