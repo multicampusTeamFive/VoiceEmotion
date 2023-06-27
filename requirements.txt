@@ -3,3 +3,9 @@
 
 Django==4.2.2
 mysqlclient==2.1.1
+datasets==1.18.3
+torchaudio==0.10.0+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html
+transformers scipy ftfy accelerate
+librosa
+pyaudio
+wave
