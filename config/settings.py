@@ -27,6 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     "emotional-musics.com",
+    "44.228.231.135"
     "127.0.0.1",
     ]
 
