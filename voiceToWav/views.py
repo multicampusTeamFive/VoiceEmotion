@@ -8,13 +8,11 @@ from pathlib import Path
 transcription = ''
 def index(request):
     # musicurl = MusicUrl.objects.all()
-    transcription = voiceToWavFun.mainProcess()
     print("=============================================")
     # print(musicurl)
     print("=============================================")
     context = {
         'test': "test",
-        'trascription' : transcription,
     }
 
     return render(request, 'index.html', context)
