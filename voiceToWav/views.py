@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from pathlib import Path
+from django.http import HttpResponse
 
 # from django.http import HttpResponse
 # from voiceToWav.models import MusicUrl
@@ -8,7 +9,7 @@ from pathlib import Path
 transcription = ''
 def index(request):
     # musicurl = MusicUrl.objects.all()
-    transcription = voiceToWavFun.mainProcess()
+    # transcription = voiceToWavFun(request).mainProcess()
     print("=============================================")
     # print(musicurl)
     print("=============================================")
@@ -19,8 +20,8 @@ def index(request):
 
     return render(request, 'index.html', context)
 
-def voiceToWavFun():
-    import Wav2Vec2Korean
+def voiceToWavFun(request):
+    from . import Wav2Vec2Korean
     def mainProcess():
         global transcription
         BASE_DIR = Path(__file__).resolve().parent.parent   # 경로를 실행하는 파일 위치 기준으로 확인 필요
@@ -41,7 +42,7 @@ def voiceToWavFun():
     import soundfile as sf
     from scipy.io import wavfile
     from IPython.display import Audio
-    import JamoFusion
+    from . import JamoFusion
 
     repo_name = "daeinbangeu/wav2vec2-large-xls-r-300m-korean-g-TW3"
     processor = Wav2Vec2Processor.from_pretrained(repo_name)
@@ -119,6 +120,8 @@ def voiceToWavFun():
         wf.close()
 
         print(f"{OUTPUT_FILENAME} 파일로 저장되었습니다.")
+        
+        return HttpResponse(f"{OUTPUT_FILENAME} 파일로 저장되었습니다.")
 
 
 
@@ -344,4 +347,4 @@ def voiceToWavFun():
         return new_string
     ### ###
 
-    return mainProcess().transcription
+    return transcription
