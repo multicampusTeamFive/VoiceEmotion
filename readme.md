@@ -23,4 +23,3 @@ VM 필요
 <hr>
 
 requirements.txt에 설치해야 하는 pip 모듈 기입 바람
-설치된 모듈은 lambda에 업로드 될 예정이니 반드시 기입 바람

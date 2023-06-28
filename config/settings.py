@@ -25,7 +25,12 @@ SECRET_KEY = "django-insecure-yjk!9ya)f$v40waws$tsve)=9r&a^^3_t9eib4-%oa-4+a(ka7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "44.228.231.135",
+    "emotional-musics.com",
+    "127.0.0.1",
+    "localhost",
+    ]
 
 
 # Application definition
@@ -40,7 +45,8 @@ DJANGO_APPS = [
     ]
 
 PROJECT_APPS = [
-    "wavToTxt.apps.WavtotxtConfig"
+    "wavToTxt.apps.WavtotxtConfig",
+    "voiceToWav.apps.VoicetowavConfig"
 ]  # 앱은 여기에
 
 THIRD_PARTY_APPS = []  # 외부 앱을 불러올 때
@@ -62,7 +68,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [

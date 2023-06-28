@@ -260,3 +260,6 @@ dmypy.json
 uploads/
 node_modules/
 *.pyc
+
+
+dblist.py
