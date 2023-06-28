@@ -1,18 +1,20 @@
 from django.shortcuts import render
+from pathlib import Path
 
 # from django.http import HttpResponse
 # from voiceToWav.models import MusicUrl
 # Create your views here.
 
-global transcription
+transcription = ''
 def index(request):
     # musicurl = MusicUrl.objects.all()
-
+    transcription = voiceToWavFun.mainProcess()
     print("=============================================")
     # print(musicurl)
     print("=============================================")
     context = {
         'test': "test",
+        'trascription' : transcription,
     }
 
     return render(request, 'index.html', context)
@@ -20,6 +22,7 @@ def index(request):
 def voiceToWavFun():
     import Wav2Vec2Korean
     def mainProcess():
+        global transcription
         BASE_DIR = Path(__file__).resolve().parent.parent   # 경로를 실행하는 파일 위치 기준으로 확인 필요
         file_path = BASE_DIR/"Voice/RecordAudio.wav"        # 여기서 수정하면 될듯
 
