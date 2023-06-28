@@ -1,2 +1,42 @@
 {% extends 'base.html' %}
-{% block content %}{% endblock content %}
+{% block content %}
+    <div class="d-flex justify-content-center mt-5 background-image">
+        <div class="me-3">
+            <button class="btn btn-primary">녹음시작</button>
+        </div>
+        <div>
+            <button class="btn btn-secondary">녹음종료</button>
+        </div>
+    </div>
+    <div class="container">
+        <h1>List Page</h1>
+        {% if condition == False %}
+        <!-- 녹음을 아직 안했을때 -->
+        <div>녹음을 안했을때</div>
+        {% elif condition == True %}
+            <!-- 녹음 완료시  -->
+            {% for music in musicurl %}
+                {% if music.category == '0,1' %}
+                    <div class="card">
+                        <!-- 리스트 목록 꾸미기 필요 -->
+                        <h3>{{ music.category }}</h3>
+                        <audio controls>
+                            <source src="{{ music.url }}" type="video/mp4">
+                        </audio>
+                    </div>
+        
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+    <div>
+        <div>emo : {{ emo }}</div>
+        <div>transcription : {{ transcription }}</div>
+    </div>
+
+
+<div> 
+    {{ transcription }}
+</div>
+
+{% endblock content %}

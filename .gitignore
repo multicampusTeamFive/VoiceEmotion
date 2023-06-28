@@ -260,3 +260,9 @@ dmypy.json
 uploads/
 node_modules/
 *.pyc
+
+# DB table list
+dblist.py
+
+# Machine Learning model
+emotion_model/
