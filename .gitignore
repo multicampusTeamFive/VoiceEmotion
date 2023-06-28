@@ -262,7 +262,7 @@ node_modules/
 *.pyc
 
 
-# DB table
+# DB table list
 dblist.py
 
 # Machine Learning model

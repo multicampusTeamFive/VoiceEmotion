@@ -18,21 +18,33 @@ import soundfile as sf
 from scipy.io import wavfile
 from IPython.display import Audio
 from . import JamoFusion
+
+# repo_name = "daeinbangeu/wav2vec2-large-xls-r-300m-korean-g-TW3"
+# processor = Wav2Vec2Processor.from_pretrained(repo_name)
+# tokenizer = Wav2Vec2CTCTokenizer.from_pretrained(repo_name)
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 repo_name = "daeinbangeu/wav2vec2-large-xls-r-300m-korean-g-TW3"
 processor = Wav2Vec2Processor.from_pretrained(repo_name)
 tokenizer = Wav2Vec2CTCTokenizer.from_pretrained(repo_name)
+# processor.to(device)
+
 #-------------------------------------------------------------------
 
 #-------------------------------------------------w2t 모델----------------------------------
 from transformers import BertTokenizer, BertModel
 from transformers import BertForSequenceClassification, AdamW
 from torch.utils.data import DataLoader, TensorDataset
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-path = "./voiceToWav/emotion_model"
+
+# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
+
+emo_path = "./voiceToWav/emotion_model"
 # 저장된 모델과 토크나이저 불러오기
-emo_model = BertForSequenceClassification.from_pretrained(path) # 여기에 모델이 저장된 '폴더' 경로를 입력
+emo_model = BertForSequenceClassification.from_pretrained(emo_path, return_dict=False) # 여기에 모델이 저장된 '폴더' 경로를 입력
 # 모델 : 분할된 문장에 벡터값을 부여하고 벡터값에 학습된 감정 점수 부여
-emo_tokenizer = BertTokenizer.from_pretrained(path) # 여기에 모델이 저장된 '폴더' 경로를 입력
+emo_tokenizer = BertTokenizer.from_pretrained(emo_path, return_tensors='pt') # 여기에 모델이 저장된 '폴더' 경로를 입력
 # 토크나이저 : 문장을 음소 단위로 분할
 emo_model.to(device)
 #------------------------------------------------------------------------------------------
@@ -355,11 +367,8 @@ def emotion_model(input_string):
         attention_masks.append(encoded['attention_mask'])
 
         # 토큰 ID와 어텐션 마스크를 텐서로 변환
-        input_ids = torch.cat(input_ids, dim=0)
-        attention_masks = torch.cat(attention_masks, dim=0)
-
-    input_ids = torch.cat(input_ids, dim=0)
-    attention_masks = torch.cat(attention_masks, dim=0)
+        # input_ids = torch.cat(input_ids, dim=0)
+        # attention_masks = torch.cat(attention_masks, dim=0)
 
     input_ids = input_ids.to(device)
     attention_masks = attention_masks.to(device)
@@ -369,6 +378,10 @@ def emotion_model(input_string):
     with torch.no_grad():
         outputs = emo_model(input_ids, attention_mask=attention_masks)
         predictions = outputs.logits
+
+    # with torch.no_grad():
+    #     outputs = emo_model(input_ids, attention_mask=attention_masks)
+    #     predictions = torch.softmax(outputs.logits, dim=1)
 
     scores = analyze_predictions(predictions)
 
@@ -388,11 +401,11 @@ def emotion_model(input_string):
 
 def mainProcess(request):
     global transcription
-    # BASE_DIR = Path(__file__).resolve().parent.parent  # 경로를 실행하는 파일 위치 기준으로 확인 필요
-    file_path = BASE_DIR / "Voice/RecordAudio.wav"  # 여기서 수정하면 될듯
-    transcription = Wav2Vec2Korean.transcribe_audio_file(file_path)
 
+    file_path = BASE_DIR / "voiceToWav/voice/RecordAudio.wav"  # 경로를 실행하는 파일 위치 기준으로 확인 필요
+    transcription = Wav2Vec2Korean.transcribe_audio_file(file_path)
     emo = emo_model(transcription)
+
     context = {
         'test': "test",
         'emo': emo,
