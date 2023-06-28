@@ -1,13 +1,14 @@
 from django.shortcuts import render
 from pathlib import Path
+from config.settings import BASE_DIR
 
 import numpy as np
-import Wav2Vec2Korean
+from . import Wav2Vec2Korean
 import torch
 from transformers import Wav2Vec2ForCTC, Wav2Vec2CTCTokenizer, Wav2Vec2Processor
 from datasets import load_dataset
 
-# from django.http import HttpResponse
+from django.http import HttpResponse
 # from voiceToWav.models import MusicUrl
 
 # 음성 파일 로드-----------------------------------------------------
@@ -16,7 +17,7 @@ import librosa
 import soundfile as sf
 from scipy.io import wavfile
 from IPython.display import Audio
-import JamoFusion
+from . import JamoFusion
 repo_name = "daeinbangeu/wav2vec2-large-xls-r-300m-korean-g-TW3"
 processor = Wav2Vec2Processor.from_pretrained(repo_name)
 tokenizer = Wav2Vec2CTCTokenizer.from_pretrained(repo_name)
@@ -27,11 +28,12 @@ from transformers import BertTokenizer, BertModel
 from transformers import BertForSequenceClassification, AdamW
 from torch.utils.data import DataLoader, TensorDataset
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+path = "./voiceToWav/emotion_model"
 # 저장된 모델과 토크나이저 불러오기
-emo_model = BertForSequenceClassification.from_pretrained("여기에 모델이 저장된 '폴더' 경로를 입력")
-#모델 : 분할된 문장에 벡터값을 부여하고 벡터값에 학습된 감정 점수 부여
-emo_tokenizer = BertTokenizer.from_pretrained("여기에 모델이 저장된 '폴더' 경로를 입력")
-#토크나이저 : 문장을 음소 단위로 분할
+emo_model = BertForSequenceClassification.from_pretrained(path) # 여기에 모델이 저장된 '폴더' 경로를 입력
+# 모델 : 분할된 문장에 벡터값을 부여하고 벡터값에 학습된 감정 점수 부여
+emo_tokenizer = BertTokenizer.from_pretrained(path) # 여기에 모델이 저장된 '폴더' 경로를 입력
+# 토크나이저 : 문장을 음소 단위로 분할
 emo_model.to(device)
 #------------------------------------------------------------------------------------------
 
@@ -121,6 +123,8 @@ def MicRecordWav():
     wf.close()
 
     print(f"{OUTPUT_FILENAME} 파일로 저장되었습니다.")
+    
+    return HttpResponse(f"{OUTPUT_FILENAME} 파일로 저장되었습니다.")
 
 
 
@@ -384,15 +388,15 @@ def emotion_model(input_string):
 
 def mainProcess(request):
     global transcription
-    BASE_DIR = Path(__file__).resolve().parent.parent  # 경로를 실행하는 파일 위치 기준으로 확인 필요
+    # BASE_DIR = Path(__file__).resolve().parent.parent  # 경로를 실행하는 파일 위치 기준으로 확인 필요
     file_path = BASE_DIR / "Voice/RecordAudio.wav"  # 여기서 수정하면 될듯
     transcription = Wav2Vec2Korean.transcribe_audio_file(file_path)
-
 
     emo = emo_model(transcription)
     context = {
         'test': "test",
         'emo': emo,
+        'transcription': transcription,
     }
     #1~5까지의 숫자가 리턴될 것임. 이후 숫자에 맞는 저장공간에서 음악을 재생하는 부분은 web 단계에서 구현 예정
     return render(request, 'index.html', context)

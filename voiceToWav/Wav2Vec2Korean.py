@@ -7,7 +7,7 @@ import librosa
 import soundfile as sf
 from scipy.io import wavfile
 from IPython.display import Audio
-import JamoFusion
+from . import JamoFusion
 
 repo_name = "daeinbangeu/wav2vec2-large-xls-r-300m-korean-g-TW3"
 processor = Wav2Vec2Processor.from_pretrained(repo_name)

@@ -262,4 +262,8 @@ node_modules/
 *.pyc
 
 
+# DB table
 dblist.py
+
+# Machine Learning model
+emotion_model/
