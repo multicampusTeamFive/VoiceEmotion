@@ -382,13 +382,18 @@ def emotion_model(input_string):
     return result_final[0]#여건상 pleasant 점수만 사용, 1~5
 # Create your views here.
 
-def mainProcess(request): 
+def mainProcess(request):
     global transcription
     BASE_DIR = Path(__file__).resolve().parent.parent  # 경로를 실행하는 파일 위치 기준으로 확인 필요
     file_path = BASE_DIR / "Voice/RecordAudio.wav"  # 여기서 수정하면 될듯
     transcription = Wav2Vec2Korean.transcribe_audio_file(file_path)
 
-    emo_model(transcription)
+
+    emo = emo_model(transcription)
+    context = {
+        'test': "test",
+        'emo': emo,
+    }
     #1~5까지의 숫자가 리턴될 것임. 이후 숫자에 맞는 저장공간에서 음악을 재생하는 부분은 web 단계에서 구현 예정
     return render(request, 'index.html', context)
 
