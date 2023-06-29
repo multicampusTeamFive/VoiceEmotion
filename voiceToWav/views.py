@@ -1,6 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from pathlib import Path
 from config.settings import BASE_DIR
+from voiceToWav.models import MusicUrl
 
 import numpy as np
 from . import Wav2Vec2Korean
@@ -392,19 +393,24 @@ def mainProcess(request):
     file_path = BASE_DIR / "voiceToWav/voice/RecordAudio.wav"  # 여기서 수정하면 될듯
     # file_path = BASE_DIR / "Voice/RecordAudio.wav"  # 여기서 수정하면 될듯
     transcription = Wav2Vec2Korean.transcribe_audio_file(file_path)
-    print("======================================================")
-    print("transcription : "+ transcription)
-    print(type(transcription))
-    print("======================================================")
     # inputs = emo_tokenizer(transcription, return_tensors='pt')
     # emo = emo_model(**inputs)
     emo = emotion_model(transcription)
     
+    musicurl = MusicUrl.objects.filter(category=str(emo))
+
     context = {
-        'test': "test",
+        'condition': True,
+        'musicurl': musicurl,
         'emo': emo,
         'transcription': transcription,
     }
     #1~5까지의 숫자가 리턴될 것임. 이후 숫자에 맞는 저장공간에서 음악을 재생하는 부분은 web 단계에서 구현 예정
     return render(request, 'index.html', context)
 
+def main(request):
+
+    context = {
+
+    }
+    return render(request, 'main.html', context)

@@ -13,30 +13,26 @@
         {% if condition == False %}
         <!-- 녹음을 아직 안했을때 -->
         <div>녹음을 안했을때</div>
+        <div class="card justify-content-center">
+            <h3>녹음 시작 버튼 클릭해 주세요.</h3>
+        </div>
         {% elif condition == True %}
             <!-- 녹음 완료시  -->
             {% for music in musicurl %}
-                {% if music.category == '0,1' %}
-                    <div class="card">
-                        <!-- 리스트 목록 꾸미기 필요 -->
-                        <h3>{{ music.category }}</h3>
-                        <audio controls>
-                            <source src="{{ music.url }}" type="video/mp4">
-                        </audio>
-                    </div>
-        
-                {% endif %}
+                <div class="card">
+                    <!-- 리스트 목록 꾸미기 필요 -->
+                    <h3>{{ music.category }}</h3>
+                    <audio controls>
+                        <source src="{{ music.url }}" type="video/mp4">
+                    </audio>
+                </div>
             {% endfor %}
         {% endif %}
     </div>
+
     <div>
         <div>emo : {{ emo }}</div>
         <div>transcription : {{ transcription }}</div>
     </div>
-
-
-<div> 
-    {{ transcription }}
-</div>
 
 {% endblock content %}

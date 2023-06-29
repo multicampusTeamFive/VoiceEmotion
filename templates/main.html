@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-center mt-5 background-image">
+    <div class="me-3">
+        <a href="{% url 'mainProcess' %}">
+            <button class="btn btn-primary">녹음시작</button>
+        </a>
+    </div>
+    <div>
+        <button class="btn btn-secondary">녹음종료</button>
+    </div>
+</div>
+<div class="container">
+    <h1>List Page</h1>
+    <div>녹음을 안했을때</div>
+    <div class="card justify-content-center">
+        <h3>녹음 시작 버튼 클릭해 주세요.</h3>
+    </div>
+</div>
+{% endblock content %}
