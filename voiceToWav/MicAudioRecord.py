@@ -8,7 +8,7 @@ def MicRecordWav():
     CHANNELS = 1  # 채널 개수 (단일 모노)
     RATE = 16000  # 샘플 레이트 (Hz)
     RECORD_SECONDS = 5  # 녹음 시간 (초)
-    OUTPUT_FILENAME = 'voice/RecordAudio.wav'  # 출력 파일 이름
+    OUTPUT_FILENAME = 'voiceToWav/voice/RecordAudio.wav'  # 출력 파일 이름
 
     # PyAudio 객체 생성
     audio = pyaudio.PyAudio()
