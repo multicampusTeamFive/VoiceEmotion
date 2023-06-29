@@ -5,6 +5,7 @@ from voiceToWav.models import MusicUrl
 
 import numpy as np
 from . import Wav2Vec2Korean
+from . import MicAudioRecord
 import torch
 from transformers import Wav2Vec2ForCTC, Wav2Vec2CTCTokenizer, Wav2Vec2Processor
 from datasets import load_dataset
@@ -86,8 +87,7 @@ def MicRecordWav():
     CHANNELS = 1  # 채널 개수 (단일 모노)
     RATE = 16000  # 샘플 레이트 (Hz)
     RECORD_SECONDS = 5  # 녹음 시간 (초)
-    OUTPUT_FILENAME = 'Voice/RecordAudio.wav'  # 출력 파일 이름
-
+    OUTPUT_FILENAME = 'Voice/RecordAudio.wav'  # 출력 파일 경로
     # PyAudio 객체 생성
     audio = pyaudio.PyAudio()
 
@@ -388,6 +388,8 @@ def emotion_model(input_string):
 # Create your views here.
 
 def mainProcess(request):
+    MicAudioRecord.MicRecordWav()
+
     global transcription
     # BASE_DIR = Path(__file__).resolve().parent.parent  # 경로를 실행하는 파일 위치 기준으로 확인 필요
     file_path = BASE_DIR / "voiceToWav/voice/RecordAudio.wav"  # 여기서 수정하면 될듯
