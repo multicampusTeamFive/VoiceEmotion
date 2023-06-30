@@ -266,3 +266,5 @@ dblist.py
 
 # Machine Learning model
 emotion_model/
+
+RecordAudio.wav
