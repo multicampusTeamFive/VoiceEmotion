@@ -1,11 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
-    <div class="d-flex justify-content-center mt-5 background-image">
+    <div class="d-flex justify-content-center mt-5">
         <div class="me-3">
-            <button class="btn btn-primary">녹음시작</button>
-        </div>
-        <div>
-            <button class="btn btn-secondary">녹음종료</button>
+            <a id="audioRecord" href="{% url 'mainProcess' %}">
+                <button class="btn btn-primary">녹음시작</button>
+            </a>
         </div>
     </div>
     <div class="container">
@@ -13,30 +12,79 @@
         {% if condition == False %}
         <!-- 녹음을 아직 안했을때 -->
         <div>녹음을 안했을때</div>
+        <div class="card justify-content-center">
+            <h3>녹음 시작 버튼 클릭해 주세요.</h3>
+        </div>
         {% elif condition == True %}
-            <!-- 녹음 완료시  -->
+            <!-- 녹음 완료시  -->                
+            
             {% for music in musicurl %}
-                {% if music.category == '0,1' %}
-                    <div class="card">
-                        <!-- 리스트 목록 꾸미기 필요 -->
-                        <h3>{{ music.category }}</h3>
-                        <audio controls>
-                            <source src="{{ music.url }}" type="video/mp4">
-                        </audio>
-                    </div>
-        
-                {% endif %}
+                <div class="card">
+                    <!-- 리스트 목록 꾸미기 필요 -->
+                    <h4>{{ music.title }}</h4>
+                    <br>
+                    <!-- <audio controls class="hidden-audio"> -->
+                    <audio id="audio{{ forloop.counter }}" controls>
+                        <source src="{{ music.url }}" type="video/mp4"> 
+                    </audio>
+                </div>
             {% endfor %}
         {% endif %}
     </div>
-    <div>
-        <div>emo : {{ emo }}</div>
-        <div>transcription : {{ transcription }}</div>
-    </div>
+    <script>
+        //녹음시작 버튼 클릭 
+        var button = document.getElementById("audioRecord");
+
+        button.addEventListener('click', function(){
+            alert('녹음 시작합니다.');
 
 
-<div> 
-    {{ transcription }}
-</div>
 
+
+            
+            setTimeout(function(){
+                alert('녹음이 종료되었습니다.');    
+            }, 5000);
+        });
+        
+        
+        //오디오 ID 값 
+        var audioElement_1 = document.getElementById('audio1'); 
+        var audioElement_2 = document.getElementById('audio2'); 
+        var audioElement_3 = document.getElementById('audio3'); 
+        var audioElement_4 = document.getElementById('audio4'); 
+        var audioElement_5 = document.getElementById('audio5'); 
+        
+        //볼륨 조절 
+        audioElement_1.volume = 0.5;
+        audioElement_2.volume = 0.5;
+        audioElement_3.volume = 0.5;
+        audioElement_4.volume = 0.5;
+        audioElement_5.volume = 0.5;
+
+        audioElement_1.addEventListener('canplaythrough', function(){
+            audioElement_1.play(); // 오디오_1 재생
+        });
+        //오디오_1 종료
+        audioElement_1.addEventListener('ended', function(){
+            audioElement_2.play(); // 오디오_2 재생
+        });
+        //오디오_2 종료
+        audioElement_2.addEventListener('ended', function(){
+            audioElement_3.play(); // 오디오_3 재생
+        });
+        //오디오_3 종료
+        audioElement_3.addEventListener('ended', function(){
+            audioElement_4.play(); // 오디오_4 재생
+        });
+        //오디오_4 종료
+        audioElement_4.addEventListener('ended', function(){
+            audioElement_5.play(); // 오디오_5 재생
+        });
+        audioElement_5.addEventListener('ended', function(){
+            audioElement_1.play(); // 오디오_5 재생
+        });
+
+
+    </script>
 {% endblock content %}

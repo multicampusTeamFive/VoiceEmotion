@@ -1,9 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from pathlib import Path
 from config.settings import BASE_DIR
+from voiceToWav.models import MusicUrl, VdiosUrl
 
 import numpy as np
 from . import Wav2Vec2Korean
+from . import MicAudioRecord
 import torch
 from transformers import Wav2Vec2ForCTC, Wav2Vec2CTCTokenizer, Wav2Vec2Processor
 from datasets import load_dataset
@@ -18,6 +20,7 @@ import soundfile as sf
 from scipy.io import wavfile
 from IPython.display import Audio
 from . import JamoFusion
+
 repo_name = "daeinbangeu/wav2vec2-large-xls-r-300m-korean-g-TW3"
 processor = Wav2Vec2Processor.from_pretrained(repo_name)
 tokenizer = Wav2Vec2CTCTokenizer.from_pretrained(repo_name)
@@ -39,18 +42,7 @@ emo_model.to(device)
 
 # Create your views here.
 transcription = ''
-''' 테스트용 페이지?
-def index(request):
-    # musicurl = MusicUrl.objects.all()
-    print("=============================================")
-    # print(musicurl)
-    print("=============================================")
-    context = {
-        'test': "test",
-    }
 
-    return render(request, 'index.html', context)
-'''
 def transcribe_audio_file(file_path):
     # 음성 파일 로드
     data = wavfile.read(file_path)
@@ -388,23 +380,55 @@ def emotion_model(input_string):
 
 def mainProcess(request):
     global transcription
+    # MicAudioRecord.MicRecordWav()
+
+    #======================================================
+    audio_file = request.FILES['audio']
+    print("audio_file")
+    print(audio_file)
+    
+    # 저장할 파일 경로 설정
+    temp_file_path = 'voiceToWav/voice/' + audio_file.name
+
+    # 파일 저장
+    with open(temp_file_path, 'wb') as file:
+        for chunk in audio_file.chunks():
+            file.write(chunk)
+
+    wav_file_path = 'voiceToWav/voice/RecordAudio.wav'
+    convert_to_wav(temp_file_path, wav_file_path)
+    
+    #======================================================
+
     # BASE_DIR = Path(__file__).resolve().parent.parent  # 경로를 실행하는 파일 위치 기준으로 확인 필요
-    file_path = BASE_DIR / "voiceToWav/voice/RecordAudio.wav"  # 여기서 수정하면 될듯
+    file_path = BASE_DIR / wav_file_path  # 여기서 수정하면 될듯
     # file_path = BASE_DIR / "Voice/RecordAudio.wav"  # 여기서 수정하면 될듯
     transcription = Wav2Vec2Korean.transcribe_audio_file(file_path)
-    print("======================================================")
-    print("transcription : "+ transcription)
-    print(type(transcription))
-    print("======================================================")
     # inputs = emo_tokenizer(transcription, return_tensors='pt')
     # emo = emo_model(**inputs)
     emo = emotion_model(transcription)
     
+    musicurl = MusicUrl.objects.filter(category=str(emo))
+    
     context = {
-        'test': "test",
+        'condition': True,
+        'musicurl': musicurl,
         'emo': emo,
         'transcription': transcription,
     }
     #1~5까지의 숫자가 리턴될 것임. 이후 숫자에 맞는 저장공간에서 음악을 재생하는 부분은 web 단계에서 구현 예정
     return render(request, 'index.html', context)
 
+def main(request):
+
+    context = {
+
+    }
+    return render(request, 'main.html', context)
+
+def convert_to_wav(input_file, output_file):
+    with wave.open(input_file, 'rb') as wave_file:
+        params = wave_file.getparams()
+        with wave.open(output_file, 'wb') as wav_output_file:
+            wav_output_file.setparams(params)
+            wav_output_file.writeframes(wave_file.readframes(params.nframes))

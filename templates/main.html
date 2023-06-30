@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-center mt-5 background-image">
+    <div class="me-3">
+        <!-- <a id="audioRecord"  href="{% url 'mainProcess' %}"> -->
+        <button id="startRecording" class="btn btn-primary">녹음시작</button>
+    </div>
+</div>
+<div class="container">
+    <h1>List Page</h1>
+    <div class="card justify-content-center">
+        <h3>녹음 시작 버튼 클릭해 주세요.</h3>
+        <p>* 녹음 시작 버튼 클릭시 5초 동안 자동 녹음 시작 됩니다.</p>
+    </div>
+</div>
+<script>
+    // 녹음시작 버튼 클릭 
+    //const button = document.getElementById("audioRecord");
+
+    // button.addEventListener('click', function(){
+    //     alert('녹음 시작합니다.');
+    //     setTimeout(function(){
+    //         alert('녹음이 종료되었습니다.');    
+    //     }, 5000);
+    // });
+    let mediaRecorder;
+    let recordedChunks = [];
+    
+    document.getElementById('startRecording').addEventListener('click', () => {
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then((stream) => {
+                mediaRecorder = new MediaRecorder(stream);
+                recordedChunks = [];
+
+                mediaRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) {
+                        recordedChunks.push(e.data);
+                    }
+                };
+
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(recordedChunks, { type: 'audio/wav' });
+                    const audioFile = new File([audioBlob], 'RecordAudio.wav');
+                    const dataTransfer = new DataTransfer();
+
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '{% url "mainProcess" %}';
+                    form.enctype = 'multipart/form-data';
+
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = 'csrfmiddlewaretoken';
+                    csrfInput.value = '{{ csrf_token }}';
+
+                    const audioInput = document.createElement('input');
+                    audioInput.type = 'file';
+                    audioInput.name = 'audio';
+                    
+                    dataTransfer.items.add(audioFile);
+                    audioInput.files = dataTransfer.files;
+
+                    form.appendChild(csrfInput);
+                    form.appendChild(audioInput);
+                    document.body.appendChild(form);
+
+                    form.submit();
+                    
+                    
+                    // const audioURL = URL.createObjectURL(audioBlob);
+                    // const downloadLink = document.createElement('a');
+                    // downloadLink.href = audioURL;
+                    // downloadLink.download = 'recording.wav';
+                    // document.body.appendChild(downloadLink);
+                    // downloadLink.click();
+                    // document.body.removeChild(downloadLink);
+                };
+
+                mediaRecorder.start();
+                document.getElementById('startRecording').disabled = true;
+
+                // 5초 후에 자동으로 녹음 중지
+                setTimeout(() => {
+                    mediaRecorder.stop();
+                    document.getElementById('startRecording').disabled = false;
+                }, 5000);
+            })
+            .catch((error) => {
+                console.error('음성 녹음에 실패했습니다:', error);
+            });
+    });
+
+</script>
+
+{% endblock content %}

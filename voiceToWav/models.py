@@ -9,3 +9,12 @@ class MusicUrl(models.Model):
     class Meta:
         managed = False
         db_table = 'MusicUrl'
+
+class VdiosUrl(models.Model):
+    id = models.AutoField(primary_key=True)
+    category = models.CharField(max_length=20, null=True)
+    url = models.CharField(max_length=255, null=True)
+    
+    class Meta:
+        managed = False
+        db_table = 'VdiosUrl'
