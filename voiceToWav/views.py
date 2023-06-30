@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from pathlib import Path
 from config.settings import BASE_DIR
-from voiceToWav.models import MusicUrl
+from voiceToWav.models import MusicUrl, VdiosUrl
 
 import numpy as np
 from . import Wav2Vec2Korean
@@ -20,6 +20,7 @@ import soundfile as sf
 from scipy.io import wavfile
 from IPython.display import Audio
 from . import JamoFusion
+
 repo_name = "daeinbangeu/wav2vec2-large-xls-r-300m-korean-g-TW3"
 processor = Wav2Vec2Processor.from_pretrained(repo_name)
 tokenizer = Wav2Vec2CTCTokenizer.from_pretrained(repo_name)
@@ -41,18 +42,7 @@ emo_model.to(device)
 
 # Create your views here.
 transcription = ''
-''' 테스트용 페이지?
-def index(request):
-    # musicurl = MusicUrl.objects.all()
-    print("=============================================")
-    # print(musicurl)
-    print("=============================================")
-    context = {
-        'test': "test",
-    }
 
-    return render(request, 'index.html', context)
-'''
 def transcribe_audio_file(file_path):
     # 음성 파일 로드
     data = wavfile.read(file_path)
@@ -401,7 +391,7 @@ def mainProcess(request):
     emo = emotion_model(transcription)
     
     musicurl = MusicUrl.objects.filter(category=str(emo))
-
+          
     context = {
         'condition': True,
         'musicurl': musicurl,
