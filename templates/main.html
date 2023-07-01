@@ -29,6 +29,7 @@
     document.getElementById('startRecording').addEventListener('click', () => {
         navigator.mediaDevices.getUserMedia({ audio: true })
             .then((stream) => {
+                alert("녹음 시작하겠습니다.");
                 mediaRecorder = new MediaRecorder(stream);
                 recordedChunks = [];
 
@@ -39,7 +40,7 @@
                 };
 
                 mediaRecorder.onstop = () => {
-                    const audioBlob = new Blob(recordedChunks, { type: 'audio/wav' });
+                    const audioBlob = new Blob(recordedChunks, { type: 'audio/wav; codecs=1' });
                     const audioFile = new File([audioBlob], 'RecordAudio.wav');
                     const dataTransfer = new DataTransfer();
 
@@ -65,15 +66,6 @@
                     document.body.appendChild(form);
 
                     form.submit();
-                    
-                    
-                    // const audioURL = URL.createObjectURL(audioBlob);
-                    // const downloadLink = document.createElement('a');
-                    // downloadLink.href = audioURL;
-                    // downloadLink.download = 'recording.wav';
-                    // document.body.appendChild(downloadLink);
-                    // downloadLink.click();
-                    // document.body.removeChild(downloadLink);
                 };
 
                 mediaRecorder.start();
@@ -83,6 +75,7 @@
                 setTimeout(() => {
                     mediaRecorder.stop();
                     document.getElementById('startRecording').disabled = false;
+                    alert("녹음 종료합니다.");
                 }, 5000);
             })
             .catch((error) => {

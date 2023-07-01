@@ -2,8 +2,8 @@
 {% block content %}
     <div class="d-flex justify-content-center mt-5">
         <div class="me-3">
-            <a id="audioRecord" href="{% url 'mainProcess' %}">
-                <button class="btn btn-primary">녹음시작</button>
+            <!-- <a id="audioRecord" href="{% url 'mainProcess' %}"> -->
+                <button id="startRecording" class="btn btn-primary">녹음시작</button>
             </a>
         </div>
     </div>
@@ -33,19 +33,14 @@
     </div>
     <script>
         //녹음시작 버튼 클릭 
-        var button = document.getElementById("audioRecord");
+        // var button = document.getElementById("audioRecord");
 
-        button.addEventListener('click', function(){
-            alert('녹음 시작합니다.');
-
-
-
-
-            
-            setTimeout(function(){
-                alert('녹음이 종료되었습니다.');    
-            }, 5000);
-        });
+        // button.addEventListener('click', function(){
+        //     alert('녹음 시작합니다.');
+        //     setTimeout(function(){
+        //         alert('녹음이 종료되었습니다.');    
+        //     }, 5000);
+        // });
         
         
         //오디오 ID 값 
@@ -85,6 +80,67 @@
             audioElement_1.play(); // 오디오_5 재생
         });
 
+    let mediaRecorder;
+    let recordedChunks = [];
+    
+    document.getElementById('startRecording').addEventListener('click', () => {
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then((stream) => {
+                alert("녹음 시작하겠습니다.");
+                mediaRecorder = new MediaRecorder(stream);
+                recordedChunks = [];
+
+                mediaRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) {
+                        recordedChunks.push(e.data);
+                    }
+                };
+
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(recordedChunks, { type: 'audio/wav; codecs=1' });
+                    const audioFile = new File([audioBlob], 'RecordAudio.wav');
+                    const dataTransfer = new DataTransfer();
+
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '{% url "mainProcess" %}';
+                    form.enctype = 'multipart/form-data';
+
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = 'csrfmiddlewaretoken';
+                    csrfInput.value = '{{ csrf_token }}';
+
+                    const audioInput = document.createElement('input');
+                    audioInput.type = 'file';
+                    audioInput.name = 'audio';
+                    
+                    dataTransfer.items.add(audioFile);
+                    audioInput.files = dataTransfer.files;
+
+                    form.appendChild(csrfInput);
+                    form.appendChild(audioInput);
+                    document.body.appendChild(form);
+
+                    form.submit();
+                };
+
+                mediaRecorder.start();
+                document.getElementById('startRecording').disabled = true;
+
+                // 5초 후에 자동으로 녹음 중지
+                setTimeout(() => {
+                    mediaRecorder.stop();
+                    document.getElementById('startRecording').disabled = false;
+                    alert("녹음 종료합니다.");
+                }, 5000);
+            })
+            .catch((error) => {
+                console.error('음성 녹음에 실패했습니다:', error);
+            });
+    });
+
+        
 
     </script>
 {% endblock content %}

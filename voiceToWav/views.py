@@ -20,6 +20,7 @@ import soundfile as sf
 from scipy.io import wavfile
 from IPython.display import Audio
 from . import JamoFusion
+import wave
 
 repo_name = "daeinbangeu/wav2vec2-large-xls-r-300m-korean-g-TW3"
 processor = Wav2Vec2Processor.from_pretrained(repo_name)
@@ -381,7 +382,6 @@ def emotion_model(input_string):
 def mainProcess(request):
     global transcription
     # MicAudioRecord.MicRecordWav()
-
     #======================================================
     audio_file = request.FILES['audio']
     print("audio_file")
@@ -396,13 +396,17 @@ def mainProcess(request):
             file.write(chunk)
 
     wav_file_path = 'voiceToWav/voice/RecordAudio.wav'
-    convert_to_wav(temp_file_path, wav_file_path)
     
+    sample_width = pyaudio.paInt16  # 16바이트 샘플 폭
+    frame_rate = 16000  # 샘플링 주파수
+    num_channels = 1  # 모노 오디오
+    with open(temp_file_path, 'rb') as audio_file:
+        audio_data = audio_file.read()
+    create_wav_file(wav_file_path, audio_data, sample_width, frame_rate, num_channels)
     #======================================================
 
-    # BASE_DIR = Path(__file__).resolve().parent.parent  # 경로를 실행하는 파일 위치 기준으로 확인 필요
+    BASE_DIR = Path(__file__).resolve().parent.parent  # 경로를 실행하는 파일 위치 기준으로 확인 필요
     file_path = BASE_DIR / wav_file_path  # 여기서 수정하면 될듯
-    # file_path = BASE_DIR / "Voice/RecordAudio.wav"  # 여기서 수정하면 될듯
     transcription = Wav2Vec2Korean.transcribe_audio_file(file_path)
     # inputs = emo_tokenizer(transcription, return_tensors='pt')
     # emo = emo_model(**inputs)
@@ -416,7 +420,6 @@ def mainProcess(request):
         'emo': emo,
         'transcription': transcription,
     }
-    #1~5까지의 숫자가 리턴될 것임. 이후 숫자에 맞는 저장공간에서 음악을 재생하는 부분은 web 단계에서 구현 예정
     return render(request, 'index.html', context)
 
 def main(request):
@@ -426,9 +429,11 @@ def main(request):
     }
     return render(request, 'main.html', context)
 
-def convert_to_wav(input_file, output_file):
-    with wave.open(input_file, 'rb') as wave_file:
-        params = wave_file.getparams()
-        with wave.open(output_file, 'wb') as wav_output_file:
-            wav_output_file.setparams(params)
-            wav_output_file.writeframes(wave_file.readframes(params.nframes))
+def create_wav_file(output_file, audio_data, sample_width, frame_rate, num_channels):
+    with wave.open(output_file, 'wb') as wav_file:
+        audio = pyaudio.PyAudio()
+        
+        wav_file.setnchannels(num_channels)
+        wav_file.setsampwidth(audio.get_sample_size(sample_width))
+        wav_file.setframerate(frame_rate)
+        wav_file.writeframes(audio_data)
