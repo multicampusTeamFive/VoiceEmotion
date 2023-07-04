@@ -397,8 +397,8 @@ def mainProcess(request):
 
     wav_file_path = 'voiceToWav/voice/RecordAudio.wav'
     
-    sample_width = pyaudio.paInt16  # 16바이트 샘플 폭
-    frame_rate = 16000  # 샘플링 주파수
+    sample_width = 16  # 16바이트 샘플 폭
+    frame_rate = 44100  # 샘플링 주파수
     num_channels = 1  # 모노 오디오
     with open(temp_file_path, 'rb') as audio_file:
         audio_data = audio_file.read()
@@ -434,6 +434,6 @@ def create_wav_file(output_file, audio_data, sample_width, frame_rate, num_chann
         audio = pyaudio.PyAudio()
         
         wav_file.setnchannels(num_channels)
-        wav_file.setsampwidth(audio.get_sample_size(sample_width))
+        wav_file.setsampwidth(sample_width // 8)
         wav_file.setframerate(frame_rate)
         wav_file.writeframes(audio_data)
